@@ -47,7 +47,9 @@ public class CachedProxy {
                 return false;
             }
             for (int i = 0; i < mArgs.length; ++i) {
-                if (!(mArgs[i] == null ? other.mArgs[i] == null : mArgs[i].equals(other.mArgs[i]))) {
+                Object o1 = mArgs[i];
+                Object o2 = other.mArgs[i];
+                if (!(o1 == null ? o2 == null : o1.equals(o2))) {
                     return false;
                 }
             }
