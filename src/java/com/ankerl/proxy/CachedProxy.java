@@ -47,7 +47,11 @@ public class CachedProxy {
                 return false;
             }
             for (int i = 0; i < mArgs.length; ++i) {
-                if (!mArgs[i].equals(other.mArgs[i])) {
+                if (mArgs[i] == null) {
+                    if (other.mArgs[i] != null) {
+                        return false;
+                    }
+                } else if (!mArgs[i].equals(other.mArgs[i])) {
                     return false;
                 }
             }
@@ -98,7 +102,9 @@ public class CachedProxy {
             public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
                 final Args input = new Args(method, args);
                 Object result = argsToOutput.get(input);
-                if (result == null) {
+                // check containsKey to support null values
+                if (result == null && !argsToOutput.containsKey(input)) {
+                    // make sure exceptions are handled transparently
                     try {
                         result = method.invoke(code, args);
                         argsToOutput.put(input, result);
