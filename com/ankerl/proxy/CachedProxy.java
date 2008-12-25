@@ -67,7 +67,7 @@ public class CachedProxy {
         public int calcHash() {
             int h = mMethod.hashCode();
             for (final Object o : mArgs) {
-                h = (h << 4) ^ (h >> 28) ^ o.hashCode();
+                h = h * 65599 + (o == null ? 0 : o.hashCode());
             }
             return h;
         }
