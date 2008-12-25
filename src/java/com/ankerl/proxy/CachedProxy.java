@@ -47,11 +47,7 @@ public class CachedProxy {
                 return false;
             }
             for (int i = 0; i < mArgs.length; ++i) {
-                if (mArgs[i] == null) {
-                    if (other.mArgs[i] != null) {
-                        return false;
-                    }
-                } else if (!mArgs[i].equals(other.mArgs[i])) {
+                if (!(mArgs[i] == null ? other.mArgs[i] == null : mArgs[i].equals(other.mArgs[i]))) {
                     return false;
                 }
             }
