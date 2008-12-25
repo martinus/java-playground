@@ -1,6 +1,7 @@
 package com.ankerl.proxy;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
@@ -98,8 +99,12 @@ public class CachedProxy {
                 final Args input = new Args(method, args);
                 Object result = argsToOutput.get(input);
                 if (result == null) {
-                    result = method.invoke(code, args);
-                    argsToOutput.put(input, result);
+                    try {
+                        result = method.invoke(code, args);
+                        argsToOutput.put(input, result);
+                    } catch (InvocationTargetException e) {
+                        throw e.getTargetException();
+                    }
                 }
                 return result;
             }
