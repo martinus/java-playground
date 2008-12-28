@@ -1,8 +1,6 @@
 package com.ankerl.math;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.Arrays;
 
 /**
  * Adds up numbers in an array with perfect precision, and in O(n).
@@ -11,6 +9,18 @@ import java.util.List;
  */
 public class Summarizer {
 
+    private double[] mPartials;
+
+    private int mUsedPartialSize;
+
+    /**
+     * Creates the perfect summarizer.
+     */
+    public Summarizer() {
+        mPartials = new double[16];
+        mUsedPartialSize = 0;
+    }
+
     /**
      * Perfectly sums up numbers, without rounding errors (if at all possible).
      * 
@@ -18,11 +28,11 @@ public class Summarizer {
      *            The values to sum up.
      * @return The sum.
      */
-    public static double msum(double... values) {
-        List<Double> partials = new ArrayList<Double>();
+    public void add(double... values) {
         for (double x : values) {
             int i = 0;
-            for (double y : partials) {
+            for (int p = 0; p < mUsedPartialSize; ++p) {
+                double y = mPartials[p];
                 if (Math.abs(x) < Math.abs(y)) {
                     double tmp = x;
                     x = y;
@@ -31,29 +41,27 @@ public class Summarizer {
                 double hi = x + y;
                 double lo = y - (hi - x);
                 if (lo != 0.0) {
-                    partials.set(i, lo);
+                    mPartials[i] = lo;
                     ++i;
                 }
                 x = hi;
             }
-            if (i < partials.size()) {
-                partials.set(i, x);
-                partials.subList(i + 1, partials.size()).clear();
-            } else {
-                partials.add(x);
+            if (i >= mPartials.length) {
+                mPartials = Arrays.copyOf(mPartials, mPartials.length * 2);
             }
+            mPartials[i] = x;
+            mUsedPartialSize = i + 1;
         }
-        return sum(partials);
     }
 
     /**
-     * Sums up the rest of the partial numbers which cannot be summed up without
-     * loss of precision.
+     * Returns the most precise sum possible. This result might contain rounding
+     * errors, but it will always be as exact as possible.
      */
-    public static double sum(Collection<Double> values) {
+    public double sum() {
         double s = 0.0;
-        for (Double d : values) {
-            s += d;
+        for (int p = 0; p < mUsedPartialSize; ++p) {
+            s += mPartials[p];
         }
         return s;
     }

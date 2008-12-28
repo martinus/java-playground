@@ -22,30 +22,39 @@ public class SummarizerTest {
 
     @Test
     public void simple() {
-        double[] vals = new double[] { 1, 1e100, 1, -1e100 };
-        vals = times(vals, 10000);
+        Summarizer s = new Summarizer();
 
-        Assert.assertEquals(20000.0, Summarizer.msum(vals), 0.0);
+        double[] vals = new double[] { 1, 1e100, 1, -1e100 };
+        for (int i = 0; i < 10000; ++i) {
+            s.add(vals);
+        }
+        Assert.assertEquals(20000.0, s.sum(), 0.0);
     }
 
     @Test
     public void sum() {
         // create array with random numbers (large and small)
         Random r = new Random();
-        double[] randVals = new double[2000000];
-        for (int i = 0; i < randVals.length; i += 2) {
-            randVals[i] = Math.pow(r.nextGaussian(), 20.0);
-            randVals[i + 1] = -randVals[i];
+
+        Summarizer s = new Summarizer();
+        for (int times = 0; times < 10000; ++times) {
+            double[] randVals = new double[500];
+            for (int i = 0; i < randVals.length; i += 2) {
+                randVals[i] = Math.pow(r.nextGaussian(), 20.0);
+                randVals[i + 1] = -randVals[i];
+            }
+
+            // shuffle
+            for (int i = randVals.length; i > 1; --i) {
+                int pos = r.nextInt(i);
+                double tmp = randVals[i - 1];
+                randVals[i - 1] = randVals[pos];
+                randVals[pos] = tmp;
+            }
+
+            s.add(randVals);
         }
 
-        // shuffle
-        for (int i = randVals.length; i > 1; --i) {
-            int pos = r.nextInt(i);
-            double tmp = randVals[i - 1];
-            randVals[i - 1] = randVals[pos];
-            randVals[pos] = tmp;
-        }
-
-        Assert.assertEquals(0.0, Summarizer.msum(randVals), 0.0);
+        Assert.assertEquals(0.0, s.sum(), 0.0);
     }
 }
