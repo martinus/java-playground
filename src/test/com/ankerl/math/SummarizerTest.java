@@ -37,10 +37,15 @@ public class SummarizerTest {
         Random r = new Random();
 
         Summarizer s = new Summarizer();
-        for (int times = 0; times < 10000; ++times) {
+        for (int times = 0; times < 1000; ++times) {
             double[] randVals = new double[500];
             for (int i = 0; i < randVals.length; i += 2) {
-                randVals[i] = Math.pow(r.nextGaussian(), 20.0);
+                double val;
+                do {
+                    val = Double.longBitsToDouble(r.nextLong());
+                } while (Double.isNaN(val));
+//                val = Math.pow(r.nextGaussian(), 100.0);
+                randVals[i] = val;
                 randVals[i + 1] = -randVals[i];
             }
 
@@ -56,5 +61,25 @@ public class SummarizerTest {
         }
 
         Assert.assertEquals(0.0, s.sum(), 0.0);
+    }
+
+    @Test
+    public void rand() {
+        Random r = new Random(5);
+        Summarizer s = new Summarizer();
+        for (int i = 0; i < 10000; ++i) {
+            double val;
+            do {
+                val = Double.longBitsToDouble(r.nextLong());
+            } while (Double.isNaN(val));
+            
+            s.add(val);
+        }
+//        System.out.print("[");
+//        for (double d : s.getPartialSums()) {
+//            System.out.print(d + " ");
+//        }
+//        System.out.println("]");
+//        System.out.println(s.sum());
     }
 }

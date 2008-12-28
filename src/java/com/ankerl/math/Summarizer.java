@@ -30,6 +30,12 @@ public class Summarizer {
      */
     public void add(double... values) {
         for (double x : values) {
+            if (Double.isInfinite(x)) {
+                throw new IllegalArgumentException("cannot add infinite values");
+            }
+            if (Double.isNaN(x)) {
+                throw new IllegalArgumentException("cannot add NaN value");
+            }
             int i = 0;
             for (int p = 0; p < mUsedPartialSize; ++p) {
                 double y = mPartials[p];
@@ -39,7 +45,15 @@ public class Summarizer {
                     y = tmp;
                 }
                 double hi = x + y;
-                double lo = y - (hi - x);
+                final double lo;
+
+                // just add number if it would mean infinity, and hope it is removed again.
+                if (Double.isInfinite(hi)) {
+                    hi = x;
+                    lo = y;
+                } else {
+                    lo = y - (hi - x);
+                }
                 if (lo != 0.0) {
                     mPartials[i] = lo;
                     ++i;
@@ -60,9 +74,20 @@ public class Summarizer {
      */
     public double sum() {
         double s = 0.0;
+        Arrays.sort(mPartials, 0, mUsedPartialSize);
         for (int p = 0; p < mUsedPartialSize; ++p) {
             s += mPartials[p];
         }
         return s;
+    }
+
+    /**
+     * Gets the precise partial sums that cannot be added without precision
+     * loss.
+     * 
+     * @return The partial sums.
+     */
+    public double[] getPartialSums() {
+        return Arrays.copyOf(mPartials, mUsedPartialSize);
     }
 }
