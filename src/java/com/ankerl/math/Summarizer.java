@@ -71,7 +71,6 @@ public class Summarizer {
      */
     public double sum() {
         double s = 0.0;
-        Arrays.sort(mPartials, 0, mUsedPartialSize);
         for (int p = 0; p < mUsedPartialSize; ++p) {
             s += mPartials[p];
         }
