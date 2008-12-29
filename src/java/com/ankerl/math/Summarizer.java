@@ -30,11 +30,8 @@ public class Summarizer {
      */
     public void add(double... values) {
         for (double x : values) {
-            if (Double.isInfinite(x)) {
-                throw new IllegalArgumentException("cannot add infinite values");
-            }
-            if (Double.isNaN(x)) {
-                throw new IllegalArgumentException("cannot add NaN value");
+            if (Double.isInfinite(x) || Double.isNaN(x)) {
+                throw new IllegalArgumentException("cannot add " + x);
             }
             int i = 0;
             for (int p = 0; p < mUsedPartialSize; ++p) {
